@@ -5,15 +5,15 @@ const Engine = Matter.Engine;
 const World = Matter.World;
 const Bodies = Matter.Bodies;
 const Body = Matter.Body;
+var check=0;
 
 function preload()
 {
 	helicopterIMG=loadAnimation("helicopter.png","heli-2.png","heli-3.png","heli-4.png");
-	packageIMG=loadImage("package.png")
+	packageIMG=loadImage("package.png");
 }
 
 function setup() {
-
 	createCanvas(800, 700);
 	rectMode(CENTER);
 	
@@ -24,7 +24,7 @@ function setup() {
 
 	helicopterSprite=createSprite(width/2, 200, 10,10);
 	helicopterSprite.addAnimation("helicopterflying",helicopterIMG);
-	helicopterSprite.scale=0.70;
+	helicopterSprite.scale=1;
 
 	groundSprite=createSprite(width/2, height-35, width,10);
 	groundSprite.shapeColor=color(255)
@@ -63,7 +63,6 @@ function setup() {
  	boxRightBody = Bodies.rectangle(boxPosition+200-20 , boxY, 20,100 , {isStatic:true} );
  	World.add(world, boxRightBody);
 
-
 	Engine.run(engine);
   
 }
@@ -72,31 +71,36 @@ function setup() {
 function draw() {
   rectMode(CENTER);
   background(0);
+
+  Engine.update(engine);
  
   packageSprite.x= packageBody.position.x 
-  packageSprite.y= packageBody.position.y
+  packageSprite.y= packageBody.position.y 
 
-  if (keyDown(RIGHT_ARROW)) {
-	helicopterSprite.velocityX = 5;
-	Matter.Body.translate(packageBody,{x:5,y:0});
+ // helicopterSprite.x=packageSprite.x;
+
+  if (keyWentDown(LEFT_ARROW)) { 
+	helicopterSprite.x=helicopterSprite.x-9;
+	if(check===0){
+		translation={x:-9,y:0}
+		Matter.Body.translate(packageBody, translation)
+	}
+  }
+  
+  
+  if(keyWentDown(RIGHT_ARROW)){
+	helicopterSprite.x=helicopterSprite.x+9;
+
+	if(check===0){
+		translation={x:+9,y:0}
+		Matter.Body.translate(packageBody, translation)
+	}
   }
 
-  if (keyDown(LEFT_ARROW)) {
-	helicopterSprite.velocityX = -5;
-	Matter.Body.translate(packageBody,{x:-5,y:0});
+  if(keyCode===DOWN_ARROW){
+	Matter.Body.setStatic(packageBody,false);
+	check=1;
   }
-
-  if (keyWentUp(LEFT_ARROW)){
-	helicopterSprite.velocityX=0;
-  }
-
-  if (keyWentUp(RIGHT_ARROW)){
-	helicopterSprite.velocityX=0;
-}
-
-	if (keyCode===DOWN_ARROW){
-    Matter.Body.setStatic(packageBody, false);
-}
-
-  drawSprites();
+  
+  drawSprites(); 
 }
